@@ -123,7 +123,7 @@ const DashboardLayout = ({ children }) => {
         {/* Sidebar footer */}
         <div className="p-4 border-t border-gray-200">
           <Link
-            to="/profile"
+            to="/dashboard/profile"
             className="flex items-center px-3 py-2 text-sm font-medium text-gray-700 rounded-md hover:bg-gray-50 hover:text-gray-900"
           >
             <FiSettings className="mr-3 h-5 w-5 text-gray-500" />
@@ -220,7 +220,7 @@ const DashboardLayout = ({ children }) => {
                   <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
                     <div className="py-1">
                       <Link
-                        to="/profile"
+                        to="/dashboard/profile"
                         className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                         onClick={() => setUserMenuOpen(false)}
                       >

@@ -12,8 +12,7 @@ import {
   FiMenu,
   FiX,
   FiLogOut,
-  FiUser,
-  FiBell
+  FiUser
 } from "react-icons/fi";
 import LoadingSpinner from "../components/LoadingSpinner";
 
@@ -22,7 +21,6 @@ const Dashboard = () => {
   const { userData } = useUserData();
   const { isHR, isHRLoading } = useAnHR();
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [notificationsOpen, setNotificationsOpen] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const location = useLocation();
 
@@ -206,40 +204,6 @@ const Dashboard = () => {
 
             {/* Right side navigation items */}
             <div className="flex items-center space-x-4">
-              {/* Notifications dropdown */}
-              <div className="relative">
-                <button
-                  className="text-gray-500 hover:text-gray-700 focus:outline-none"
-                  onClick={() => setNotificationsOpen(!notificationsOpen)}
-                >
-                  <FiBell className="h-6 w-6" />
-                  <span className="absolute top-0 right-0 block h-2 w-2 rounded-full bg-red-500"></span>
-                </button>
-
-                {notificationsOpen && (
-                  <div className="origin-top-right absolute right-0 mt-2 w-80 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-                    <div className="py-2 px-4 border-b border-gray-200">
-                      <h3 className="text-sm font-semibold text-gray-900">Notifications</h3>
-                    </div>
-                    <div className="max-h-60 overflow-y-auto">
-                      <div className="py-2 px-4 border-b border-gray-200 hover:bg-gray-50">
-                        <p className="text-sm font-medium text-gray-900">New asset request</p>
-                        <p className="text-xs text-gray-500">John Doe requested a laptop</p>
-                        <p className="text-xs text-gray-400 mt-1">2 hours ago</p>
-                      </div>
-                      <div className="py-2 px-4 border-b border-gray-200 hover:bg-gray-50">
-                        <p className="text-sm font-medium text-gray-900">Request approved</p>
-                        <p className="text-xs text-gray-500">Your monitor request was approved</p>
-                        <p className="text-xs text-gray-400 mt-1">Yesterday</p>
-                      </div>
-                    </div>
-                    <div className="py-2 px-4">
-                      <a href="#" className="text-xs text-primary-600 hover:text-primary-500">View all notifications</a>
-                    </div>
-                  </div>
-                )}
-              </div>
-
               {/* User dropdown */}
               <div className="relative">
                 <button
@@ -271,13 +235,6 @@ const Dashboard = () => {
                         onClick={() => setUserMenuOpen(false)}
                       >
                         Your Profile
-                      </Link>
-                      <Link
-                        to="/settings"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        onClick={() => setUserMenuOpen(false)}
-                      >
-                        Settings
                       </Link>
                       <button
                         onClick={handleLogout}

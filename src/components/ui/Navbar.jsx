@@ -131,7 +131,7 @@ const Navbar = ({ logo, brandName }) => {
                 {isProfileMenuOpen && (
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-10 ring-1 ring-black ring-opacity-5">
                     <Link
-                      to="/profile"
+                      to="/dashboard/profile"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                       onClick={() => setIsProfileMenuOpen(false)}
                     >
@@ -216,7 +216,7 @@ const Navbar = ({ logo, brandName }) => {
             {user ? (
               <>
                 <Link
-                  to="/profile"
+                  to="/dashboard/profile"
                   className="block py-2 text-base font-medium text-gray-700 hover:text-primary-500"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >

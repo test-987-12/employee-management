@@ -3,11 +3,13 @@ import SectionTitle from "../../../components/SectionTitle2";
 import PageTitle from "../../../components/PageTitle";
 import LoadingSpinner from "../../../components/LoadingSpinner";
 import useUsersByCompany from "../../../Hooks/useUsersByCompany";
+import useUserData from "../../../Hooks/useUserData";
 import { useState } from "react";
 import DataTable from "react-data-table-component";
 
 function MyTeam() {
     const { usersByCompany, isLoading } = useUsersByCompany();
+    const { userData } = useUserData();
     const [searchTerm, setSearchTerm] = useState("");
 
     if (isLoading) {
@@ -85,34 +87,48 @@ function MyTeam() {
           <div className="text-center">
             <SectionTitle sectionTitle={"My Team"} />
 
-            <div className="flex justify-center mt-6 mb-8">
-              <div className="w-full max-w-md">
-                <input
-                  type="text"
-                  placeholder="Search by team member name"
-                  className="w-full p-2 border border-green-700 rounded-md"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
+            {!userData?.company_name ? (
+              <div className="mt-8 max-w-3xl mx-auto">
+                <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 text-yellow-700 rounded">
+                  <p className="font-medium">You are not assigned to a company yet</p>
+                  <p className="text-sm mt-1">
+                    You need to be added to a company by an HR administrator before you can view team members.
+                    Please contact your HR department to complete your onboarding process.
+                  </p>
+                </div>
               </div>
-            </div>
-
-            {/* Data Table */}
-            <div className="mt-2">
-              <DataTable
-                columns={columns}
-                data={filteredTeamMembers}
-                pagination
-                highlightOnHover
-                defaultSortFieldId={null}
-                defaultSortAsc={false}
-                noDataComponent={
-                  <div className="p-4">
-                    No team members found
+            ) : (
+              <>
+                <div className="flex justify-center mt-6 mb-8">
+                  <div className="w-full max-w-md">
+                    <input
+                      type="text"
+                      placeholder="Search by team member name"
+                      className="w-full p-2 border border-green-700 rounded-md"
+                      value={searchTerm}
+                      onChange={(e) => setSearchTerm(e.target.value)}
+                    />
                   </div>
-                }
-              />
-            </div>
+                </div>
+
+                {/* Data Table */}
+                <div className="mt-2">
+                  <DataTable
+                    columns={columns}
+                    data={filteredTeamMembers}
+                    pagination
+                    highlightOnHover
+                    defaultSortFieldId={null}
+                    defaultSortAsc={false}
+                    noDataComponent={
+                      <div className="p-4">
+                        No team members found
+                      </div>
+                    }
+                  />
+                </div>
+              </>
+            )}
           </div>
         </div>
       </section>

@@ -1,4 +1,4 @@
-import { createBrowserRouter, } from "react-router-dom";
+import { createBrowserRouter, Navigate } from "react-router-dom";
 import Main from "../Layout/Main";
 import Home from "../Pages/Home/Home/Home";
 import PasswordReset from "../Pages/PasswordReset/PasswordReset";
@@ -14,6 +14,7 @@ import MyRequestAssets from "../Pages/Dashboard/MyRequestAssets/MyRequestAssets"
 import MyAssets from "../Pages/Dashboard/MyAssets/MyAssets";
 import MyTeam from "../Pages/Dashboard/MyTeam/MyTeam";
 import Profile from "../Pages/Profile/Profile";
+import Settings from "../Pages/Settings/Settings";
 import EmployeeHome from "../Pages/Dashboard/EmployeeHome/EmployeeHome";
 import Payment from "../Pages/Dashboard/Payment/Payment";
 import AllRequests from "../Pages/Dashboard/AllRequest/AllRequests";
@@ -22,6 +23,7 @@ import IncreaseLimit from "../Pages/IncreaseLimit/IncreaseLimit";
 import ErrorPage from "../Pages/ErrorPage/ErrorPage";
 import AuthPage from "../Pages/Auth/AuthPage";
 import PrivateRoute from "./PrivateRoute/PrivateRoutes";
+import DashboardRedirect from "../components/DashboardRedirect";
 
 
 export const router = createBrowserRouter([
@@ -54,6 +56,10 @@ export const router = createBrowserRouter([
     path: 'dashboard',
     element: <PrivateRoute><Dashboard /></PrivateRoute>,
     children: [
+      {
+        index: true,
+        element: <DashboardRedirect />
+      },
       {
         path: 'home',
         element: <HrHome></HrHome>
@@ -109,6 +115,10 @@ export const router = createBrowserRouter([
       {
         path: "profile",
         element: <Profile></Profile>
+      },
+      {
+        path: "settings",
+        element: <Settings></Settings>
       },
       {
         path: "increaseLimit",

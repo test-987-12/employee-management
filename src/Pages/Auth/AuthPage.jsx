@@ -156,23 +156,43 @@ const AuthPage = () => {
           payment_status: true, // All assets are free to use for all users
         };
 
+        // First create the user in Firebase Authentication
+        console.log("AuthPage - Creating HR user in Firebase Auth");
+        const authResult = await createUser(email, password);
+        const loggedUser = authResult.user;
+
+        // Update user profile
+        console.log("AuthPage - Updating HR user profile");
+        await updateUserProfile(name);
+
+        // Then save user data to Firebase Realtime Database
+        console.log("AuthPage - Saving HR user info to Firebase RTDB");
         const { data: users } = await axiosPublic.post("/users", usersInfo);
 
-        if (users.insertedId) {
-          await createUser(email, password);
-          await updateUserProfile(name);
-          setUser((prevUser) => ({ ...prevUser, displayName: name }));
+        // Update user context
+        setUser((prevUser) => ({ ...prevUser, displayName: name }));
 
-          Swal.fire({
-            icon: "success",
-            title: "HR Account Created!",
-            text: "You'll be redirected to the dashboard.",
-            showConfirmButton: false,
-            timer: 1500
-          });
+        Swal.fire({
+          icon: "success",
+          title: "HR Account Created!",
+          text: "You'll be redirected to the dashboard.",
+          showConfirmButton: false,
+          timer: 1500
+        });
 
-          navigate("/dashboard");
+        // Get the token and store it
+        try {
+          console.log("AuthPage - Getting token for HR user");
+          const token = await loggedUser.getIdToken();
+          console.log("AuthPage - Token received:", token.substring(0, 10) + "...");
+          setAuthToken(token);
+        } catch (tokenError) {
+          console.error("AuthPage - Error getting token for HR user:", tokenError);
         }
+
+        // Navigate to dashboard
+        console.log("AuthPage - Navigating to dashboard");
+        navigate("/dashboard");
       } else {
         // Employee signup
         const usersInfo = {
@@ -180,19 +200,34 @@ const AuthPage = () => {
           email,
           dob,
           role: "employee",
+          created_at: new Date().toISOString()
         };
 
-        await axiosPublic.post("/users", usersInfo);
-
-        // Create user in Firebase Authentication
-        console.log("AuthPage - Creating user in Firebase Auth");
-        await createUser(email, password);
+        // First create the user in Firebase Authentication
+        console.log("AuthPage - Creating employee user in Firebase Auth");
+        const authResult = await createUser(email, password);
+        const loggedUser = authResult.user;
 
         // Update user profile
-        console.log("AuthPage - Updating user profile");
+        console.log("AuthPage - Updating employee user profile");
         await updateUserProfile(name);
 
+        // Then save user data to Firebase Realtime Database
+        console.log("AuthPage - Saving employee user info to Firebase RTDB");
+        await axiosPublic.post("/users", usersInfo);
+
+        // Update user context
         setUser((prevUser) => ({ ...prevUser, displayName: name }));
+
+        // Get the token and store it
+        try {
+          console.log("AuthPage - Getting token for employee user");
+          const token = await loggedUser.getIdToken();
+          console.log("AuthPage - Token received:", token.substring(0, 10) + "...");
+          setAuthToken(token);
+        } catch (tokenError) {
+          console.error("AuthPage - Error getting token for employee user:", tokenError);
+        }
 
         Swal.fire({
           icon: "success",
@@ -201,7 +236,9 @@ const AuthPage = () => {
           timer: 1500
         });
 
-        navigate("/");
+        // Navigate to dashboard instead of home page
+        console.log("AuthPage - Navigating to dashboard");
+        navigate("/dashboard");
       }
     } catch (error) {
       const errorMessage = error.response?.data?.message || error.message;
@@ -240,12 +277,21 @@ const AuthPage = () => {
       const userInfo = {
         name: user?.displayName,
         email: user?.email,
-        profile_image: user?.photoURL,
-        role: "employee"
+        photoURL: user?.photoURL,
+        role: "employee",
+        created_at: new Date().toISOString()
       };
 
-      console.log("AuthPage - Saving Google user info to Firebase:", userInfo);
-      await axiosPublic.post("/users", userInfo);
+      // Check if user already exists in the database
+      console.log("AuthPage - Checking if Google user already exists in Firebase RTDB");
+      try {
+        // Save user data to Firebase Realtime Database
+        console.log("AuthPage - Saving Google user info to Firebase RTDB:", userInfo);
+        await axiosPublic.post("/users", userInfo);
+      } catch (error) {
+        console.error("AuthPage - Error saving Google user to RTDB:", error);
+        // Continue anyway as the authentication was successful
+      }
 
       Swal.fire({
         icon: "success",

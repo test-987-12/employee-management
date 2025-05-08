@@ -37,14 +37,17 @@ function RequestAsset() {
       queryKey: ["assets", searchTerm, filterTerm],
       queryFn: async () => {
         try {
+          // If user doesn't have a company, return empty array
+          if (!userData?.company_name) {
+            return [];
+          }
+
           const allAssets = await getAllData("assets");
 
           // Filter assets based on company name, search term and filter term
           return allAssets.filter(asset => {
-            // First filter by company name - only show assets from the user's company
-            const matchesCompany = userData?.company_name
-              ? asset.company_name === userData.company_name
-              : true;
+            // Only show assets from the user's company
+            const matchesCompany = asset.company_name === userData.company_name;
 
             const matchesSearch = searchTerm
               ? asset.product_name?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -191,53 +194,71 @@ function RequestAsset() {
               <SectionTitle sectionTitle={"Request For An Asset"} />
               <div className="mt-4 max-w-3xl mx-auto text-center">
                 <p className="text-gray-600">
-                  Browse available assets below and request the ones you need. Your request will be sent to HR for approval.
-                  Once approved, the asset will be assigned to you and will appear in your "My Assets" page.
+                  {userData?.company_name ? (
+                    <>
+                      Browse available assets below and request the ones you need. Your request will be sent to HR for approval.
+                      Once approved, the asset will be assigned to you and will appear in your "My Assets" page.
+                    </>
+                  ) : (
+                    <>
+                      To request assets, you must first be added to a company by an HR administrator.
+                      Once you're added to a company, you'll be able to browse and request assets from your company's inventory.
+                    </>
+                  )}
                 </p>
               </div>
             </div>
-            <div className="flex flex-wrap gap-6 items-start mt-12">
-              <div className="w-full max-w-[320px]">
-                <input
-                  type="text"
-                  placeholder="Search Item By Asset Name"
-                  className="p-2 rounded-md border border-green-700 w-full"
-                  value={searchTerm}
-                  onChange={handleSearchChange}
-                />
+            {userData?.company_name && (
+              <div className="flex flex-wrap gap-6 items-start mt-12">
+                <div className="w-full max-w-[320px]">
+                  <input
+                    type="text"
+                    placeholder="Search Item By Asset Name"
+                    className="p-2 rounded-md border border-green-700 w-full"
+                    value={searchTerm}
+                    onChange={handleSearchChange}
+                  />
+                </div>
+                <div className="w-full max-w-[320px]">
+                  <select
+                    className="w-[200px] p-2 rounded-md bg-gray-200 text-green-700 font-normal text-lg"
+                    value={filterTerm}
+                    onChange={handleFilterChange}
+                  >
+                    <option value="">Filter Assets</option>
+                    <option value="Available">Available</option>
+                    <option value="Out Of Stock">Out Of Stock</option>
+                    <option value="Laptop">Laptop</option>
+                    <option value="Desktop">Desktop</option>
+                    <option value="Monitor">Monitor</option>
+                    <option value="Keyboard">Keyboard</option>
+                    <option value="Mouse">Mouse</option>
+                    <option value="Headset">Headset</option>
+                    <option value="Phone">Phone</option>
+                    <option value="Tablet">Tablet</option>
+                    <option value="Printer">Printer</option>
+                    <option value="Scanner">Scanner</option>
+                    <option value="Projector">Projector</option>
+                    <option value="Camera">Camera</option>
+                    <option value="Office Chair">Office Chair</option>
+                    <option value="Desk">Desk</option>
+                    <option value="Software License">Software License</option>
+                    <option value="Server Equipment">Server Equipment</option>
+                  </select>
+                </div>
               </div>
-              <div className="w-full max-w-[320px]">
-                <select
-                  className="w-[200px] p-2 rounded-md bg-gray-200 text-green-700 font-normal text-lg"
-                  value={filterTerm}
-                  onChange={handleFilterChange}
-                >
-                  <option value="">Filter Assets</option>
-                  <option value="Available">Available</option>
-                  <option value="Out Of Stock">Out Of Stock</option>
-                  <option value="Laptop">Laptop</option>
-                  <option value="Desktop">Desktop</option>
-                  <option value="Monitor">Monitor</option>
-                  <option value="Keyboard">Keyboard</option>
-                  <option value="Mouse">Mouse</option>
-                  <option value="Headset">Headset</option>
-                  <option value="Phone">Phone</option>
-                  <option value="Tablet">Tablet</option>
-                  <option value="Printer">Printer</option>
-                  <option value="Scanner">Scanner</option>
-                  <option value="Projector">Projector</option>
-                  <option value="Camera">Camera</option>
-                  <option value="Office Chair">Office Chair</option>
-                  <option value="Desk">Desk</option>
-                  <option value="Software License">Software License</option>
-                  <option value="Server Equipment">Server Equipment</option>
-
-                </select>
-              </div>
-            </div>
+            )}
             {/* Data Table */}
             <div className="mt-8">
-              {assets.length === 0 ? (
+              {!userData?.company_name ? (
+                <div className="bg-yellow-50 border-l-4 border-yellow-500 p-4 text-yellow-700 rounded">
+                  <p className="font-medium">You are not assigned to a company yet</p>
+                  <p className="text-sm mt-1">
+                    You need to be added to a company by an HR administrator before you can request assets.
+                    Please contact your HR department to complete your onboarding process.
+                  </p>
+                </div>
+              ) : assets.length === 0 ? (
                 <div className="bg-blue-50 border-l-4 border-blue-500 p-4 text-blue-700 rounded">
                   <p className="font-medium">No assets available</p>
                   <p className="text-sm mt-1">

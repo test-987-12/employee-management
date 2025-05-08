@@ -28,10 +28,22 @@ axiosSecure.interceptors.request.use(
   }
 );
 
-// Log responses for debugging
+// Log responses and transform Firebase RTDB responses
 axiosSecure.interceptors.response.use(
   (response) => {
     console.log(`Firebase RTDB response: ${response.status} ${response.statusText}`);
+
+    // For POST requests to Firebase RTDB, the response contains a "name" property
+    // which is the auto-generated ID. Transform this to match expected format.
+    if (response.config.method === 'post' && response.data && response.data.name) {
+      console.log(`Firebase RTDB created record with ID: ${response.data.name}`);
+      // Transform to a format similar to MongoDB's insertedId
+      response.data = {
+        ...response.data,
+        insertedId: response.data.name
+      };
+    }
+
     return response;
   },
   (error) => {
